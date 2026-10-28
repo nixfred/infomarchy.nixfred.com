@@ -1,0 +1,10 @@
+{
+  "name": "infomarchy.nixfred.com",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun build.ts",
+    "stats": "bun build.ts --stats-only",
+    "serve": "python3 -m http.server 8080 --directory dist"
+  }
+}
