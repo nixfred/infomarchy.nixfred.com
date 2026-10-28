@@ -14,7 +14,7 @@ The image above is demo data from the plugin's built-in demo mode.
 
 ## Status
 
-Local build only. This repo has not been pushed, and nothing is deployed. The visual design is provisional and not yet approved. All design tokens live in one file, `src/site.css`, so a re-skin is a one-file change.
+Live at https://infomarchy.nixfred.com/ on Cloudflare Pages (project `infomarchy-nixfred-com`, direct upload with wrangler). The visual design is provisional and not yet approved. All design tokens live in one file, `src/site.css`, so a re-skin is a one-file change.
 
 ## Build
 
