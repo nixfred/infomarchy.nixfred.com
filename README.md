@@ -2,7 +2,7 @@
   <img src="src/public/nixfred-logo.svg" alt="nixfred" width="228" height="88">
 </p>
 
-# infomarchy.nixfred.com
+# infomarchy.io
 
 The one-page site for [Infomarchy](https://github.com/nixfred/infomarchy), an Omarchy plugin that draws AI agent sessions, usage limits and machine stats on the desktop wallpaper. Part of [nixfred.com](https://nixfred.com/).
 
@@ -14,7 +14,7 @@ The image above is demo data from the plugin's built-in demo mode.
 
 ## Status
 
-Live at https://infomarchy.nixfred.com/ on Cloudflare Pages (project `infomarchy-nixfred-com`, direct upload with wrangler). The visual design is provisional and not yet approved. All design tokens live in one file, `src/site.css`, so a re-skin is a one-file change.
+Live at https://infomarchy.io/ (infomarchy.com, www.infomarchy.com, www.infomarchy.io and infomarchy.nixfred.com all 301 to it) on Cloudflare Pages (project `infomarchy-nixfred-com`, direct upload with wrangler). The visual design is provisional and not yet approved. All design tokens live in one file, `src/site.css`, so a re-skin is a one-file change.
 
 ## Build
 

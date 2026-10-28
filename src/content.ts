@@ -4,7 +4,7 @@
 // nothing that is not in https://github.com/nixfred/infomarchy.
 
 export const SITE = {
-  origin: 'https://infomarchy.nixfred.com',
+  origin: 'https://infomarchy.io',
   name: 'Infomarchy',
   repo: 'https://github.com/nixfred/infomarchy',
   repoSlug: 'nixfred/infomarchy',

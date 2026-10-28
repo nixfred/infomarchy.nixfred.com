@@ -25,7 +25,7 @@ const longDate = (iso: string) =>
 type Stats = { stars: number; forks: number; contributors: number; fetched: string }
 
 async function fetchStats(): Promise<Stats> {
-  const headers: Record<string, string> = { accept: 'application/vnd.github+json', 'user-agent': 'infomarchy.nixfred.com-build' }
+  const headers: Record<string, string> = { accept: 'application/vnd.github+json', 'user-agent': 'infomarchy.io-build' }
   if (process.env.GITHUB_TOKEN) headers.authorization = `Bearer ${process.env.GITHUB_TOKEN}`
   const api = `https://api.github.com/repos/${SITE.repoSlug}`
   const repo = await fetch(api, { headers, signal: AbortSignal.timeout(15000) })

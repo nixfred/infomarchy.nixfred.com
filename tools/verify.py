@@ -25,7 +25,7 @@ try:
         for u in p.urls:
             if u.startswith('mailto:'): continue
             if u.startswith('http'):
-                if u.startswith('https://infomarchy.nixfred.com'): u = u.replace('https://infomarchy.nixfred.com', B)
+                if u.startswith('https://infomarchy.io'): u = u.replace('https://infomarchy.io', B)
                 else: print('  external link (navigation only):', u); continue
             elif u.startswith('#'): continue
             else: u = B + (u if u.startswith('/') else '/' + u)
