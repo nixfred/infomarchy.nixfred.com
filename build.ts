@@ -12,6 +12,8 @@ const ROOT = import.meta.dir
 const SRC = join(ROOT, 'src')
 const DIST = join(ROOT, 'dist')
 const STATS_FILE = join(SRC, 'data', 'github-stats.json')
+const PEOPLE_FILE = join(SRC, 'data', 'contributors.json')
+const AVATAR_DIR = join(SRC, 'data', 'avatars')
 const { SITE } = C
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -53,6 +55,117 @@ async function loadStats(): Promise<Stats> {
     console.warn(`stats: fetch failed (${e}); using committed numbers from ${s.fetched}`)
     return s
   }
+}
+
+/* --------------------------------------------------------- contributors */
+type MergedPr = { number: number; title: string; url: string }
+type Person = { login: string; name: string; url: string; avatar: string; merged: MergedPr[] }
+type People = { fetched: string; people: Person[] }
+
+const ghHeaders = () => {
+  const h: Record<string, string> = { accept: 'application/vnd.github+json', 'user-agent': 'infomarchy.io-build' }
+  const t = process.env.GITHUB_TOKEN || process.env.GH_TOKEN
+  if (t) h.authorization = `Bearer ${t}`
+  return h
+}
+async function ghPages<T>(url: string): Promise<T[]> {
+  const out: T[] = []
+  for (let page = 1; page <= 20; page++) {
+    const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}per_page=100&page=${page}`, { headers: ghHeaders(), signal: AbortSignal.timeout(20000) })
+    if (!res.ok) throw new Error(`${url} ${res.status}`)
+    const rows = (await res.json()) as T[]
+    out.push(...rows)
+    if (rows.length < 100) break
+  }
+  return out
+}
+const imgExt = (b: Uint8Array) => (b[0] === 0x89 && b[1] === 0x50 ? 'png' : b[0] === 0xff && b[1] === 0xd8 ? 'jpg' : b[0] === 0x52 && b[1] === 0x49 ? 'webp' : b[0] === 0x47 && b[1] === 0x49 ? 'gif' : '')
+
+// Everyone with a merged pull request or a line in GitHub's contributor list,
+// minus bots. Co-authored-by trailers in this repo name only AI tools, which are excluded.
+async function fetchPeople(): Promise<People> {
+  const api = `https://api.github.com/repos/${SITE.repoSlug}`
+  const contributors = await ghPages<{ login: string; type: string }>(`${api}/contributors`)
+  const pulls = await ghPages<{ number: number; title: string; html_url: string; merged_at: string | null; user: { login: string; type: string } | null }>(
+    `${api}/pulls?state=closed&sort=created&direction=asc`,
+  )
+  const logins = new Map<string, string>() // lowercase -> canonical
+  const keep = (u: { login: string; type: string } | null) => !!u && u.type === 'User' && !C.CONTRIBUTOR_EXCLUDE.test(u.login)
+  for (const u of contributors) if (keep(u)) logins.set(u.login.toLowerCase(), u.login)
+  const merged = new Map<string, MergedPr[]>()
+  for (const pr of pulls) {
+    if (!pr.merged_at || !keep(pr.user)) continue
+    const l = pr.user!.login
+    logins.set(l.toLowerCase(), l)
+    const list = merged.get(l.toLowerCase()) ?? []
+    list.push({ number: pr.number, title: pr.title.replace(/\s*[\u2013\u2014]\s*/g, ', '), url: pr.html_url })
+    merged.set(l.toLowerCase(), list)
+  }
+  if (!logins.size) throw new Error('no contributors found')
+  mkdirSync(AVATAR_DIR, { recursive: true })
+  const people: Person[] = []
+  for (const [low, login] of logins) {
+    const ur = await fetch(`https://api.github.com/users/${login}`, { headers: ghHeaders(), signal: AbortSignal.timeout(20000) })
+    if (!ur.ok) throw new Error(`user ${login} ${ur.status}`)
+    const u = (await ur.json()) as { login: string; name: string | null; html_url: string; avatar_url: string; type: string }
+    if (u.type !== 'User') continue
+    const av = await fetch(`${u.avatar_url}${u.avatar_url.includes('?') ? '&' : '?'}s=96`, { signal: AbortSignal.timeout(20000) })
+    if (!av.ok) throw new Error(`avatar ${login} ${av.status}`)
+    const bytes = new Uint8Array(await av.arrayBuffer())
+    const ext = imgExt(bytes)
+    if (!ext || bytes.length > 60000) throw new Error(`avatar ${login} unusable`)
+    for (const f of existsSync(AVATAR_DIR) ? readdirSync(AVATAR_DIR) : []) if (f.startsWith(u.login + '.')) rmSync(join(AVATAR_DIR, f))
+    writeFileSync(join(AVATAR_DIR, `${u.login}.${ext}`), bytes)
+    people.push({
+      login: u.login,
+      name: (u.name ?? '').trim(),
+      url: u.html_url,
+      avatar: `${u.login}.${ext}`,
+      merged: (merged.get(low) ?? []).sort((a, b) => a.number - b.number),
+    })
+  }
+  const maintainer = SITE.repoSlug.split('/')[0].toLowerCase()
+  people.sort((a, b) => (a.login.toLowerCase() === maintainer ? -1 : b.login.toLowerCase() === maintainer ? 1 : b.merged.length - a.merged.length || a.login.localeCompare(b.login)))
+  return { fetched: nyDate(), people }
+}
+
+async function loadPeople(): Promise<People> {
+  const committed = (): People => JSON.parse(readFileSync(PEOPLE_FILE, 'utf8')) as People
+  try {
+    const p = await fetchPeople()
+    const old = existsSync(PEOPLE_FILE) ? committed() : null
+    if (old && p.people.length < old.people.length) throw new Error(`only ${p.people.length} found, ${old.people.length} committed`)
+    writeFileSync(PEOPLE_FILE, JSON.stringify(p, null, 2) + '\n')
+    console.log('contributors: fetched', p.people.length)
+    return p
+  } catch (e) {
+    if (!existsSync(PEOPLE_FILE)) throw new Error(`contributors fetch failed (${e}) and no committed ${PEOPLE_FILE}`)
+    const p = committed()
+    console.warn(`contributors: fetch failed (${e}); using committed list from ${p.fetched}`)
+    return p
+  }
+}
+
+type Card = { login: string; name: string; handle: string; url: string; avatar: string; role: string; text: string; prs: MergedPr[]; mergedCount: number }
+function peopleCards(p: People): Card[] {
+  return p.people.map((x) => {
+    const w = C.CONTRIBUTOR_WRITEUPS[x.login]
+    const byNum = new Map(x.merged.map((m) => [m.number, m]))
+    let prs = (w?.featured ?? []).map((n) => byNum.get(n)).filter((m): m is MergedPr => !!m)
+    if (!prs.length && !w) prs = x.merged.slice(-2).reverse()
+    const text = w?.text ?? (x.merged.length ? `Merged pull requests: ${x.merged.slice(-2).map((m) => m.title).join('; ')}.` : 'Contributed to the repository.')
+    return {
+      login: x.login,
+      name: w?.name ?? (x.name || x.login),
+      handle: x.login,
+      url: x.url,
+      avatar: x.avatar,
+      role: w?.role ?? (x.merged.length ? `${x.merged.length} merged pull request${x.merged.length === 1 ? '' : 's'}` : 'Contributor'),
+      text,
+      prs,
+      mergedCount: x.merged.length,
+    }
+  })
 }
 
 /* ------------------------------------------------- README install check */
@@ -125,6 +238,7 @@ const header = `<a class="skip" href="#main">Skip to content</a>
 <nav class="nav" aria-label="Primary">
 <a href="/#install">Install</a>
 <a href="/#features">Features</a>
+<a class="nav-more" href="/#contributors">Contributors</a>
 <a href="${SITE.repo}">GitHub</a>
 </nav>
 </div>
@@ -147,7 +261,7 @@ function installHtml() {
   }).join('\n')
 }
 
-function indexHtml(s: Stats) {
+function indexHtml(s: Stats, people: People) {
   const date = longDate(s.fetched)
   const nf = new Intl.NumberFormat('en-US')
   const cards = C.FEATURES.map(
@@ -158,7 +272,22 @@ function indexHtml(s: Stats) {
 <p class="short">${esc(f.short)}</p>
 </li>`,
   ).join('\n')
-  const q = C.QUOTE
+  const cs = peopleCards(people)
+  const peopleHtml = cs
+    .map(
+      (c) => `<li class="person">
+<a class="p-head" href="${esc(c.url)}"><img class="av" src="${A('av-' + c.avatar)}" width="48" height="48" loading="lazy" decoding="async" alt=""><span class="p-id"><span class="p-name">${esc(c.name)}</span><span class="p-handle">@${esc(c.handle)}</span></span></a>
+<p class="p-role">${esc(c.role)}</p>
+<p class="p-what">${esc(c.text)}</p>${c.prs.length ? `\n<p class="p-prs"><span>Pull request${c.prs.length === 1 ? '' : 's'}</span> ${c.prs.map((m) => `<a href="${esc(m.url)}" title="${esc(m.title)}">#${m.number}</a>`).join(' ')}</p>` : ''}
+</li>`,
+    )
+    .join('\n')
+  const quotesHtml = C.QUOTES.map(
+    (q) => `<li><figure class="quote">
+<blockquote><p>${esc(q.text)}</p></blockquote>
+<figcaption><a href="${esc(q.url)}">${esc(q.who)} (@${esc(q.handle)}) on X, about ${esc(q.about)}</a></figcaption>
+</figure></li>`,
+  ).join('\n')
   return (
     head({ title: SITE.title, desc: SITE.description, path: '/', index: true }) +
     `<body>
@@ -222,20 +351,31 @@ ${cards}
 <ul class="stats">
 <li><b>${nf.format(s.stars)}</b> stars</li>
 <li><b>${nf.format(s.forks)}</b> forks</li>
-<li><b>${nf.format(s.contributors)}</b> contributors</li>
+<li><b>${nf.format(cs.length)}</b> contributors</li>
 <li>MIT license</li>
 </ul>
-<p class="note">Star and contributor counts are from GitHub, ${date}.</p>
+<p class="note">Star counts and the contributor count are from GitHub, ${date}.</p>
+</div>
+</section>
+
+<section class="sec" id="contributors">
+<div class="wrap">
+<h2>Contributors</h2>
+<p>${cs.length} people have contributed to Infomarchy. Here is what each of them added, from their merged pull requests.</p>
+<ul class="people">
+${peopleHtml}
+</ul>
+<p class="note">Contributor list and pull requests from GitHub, ${longDate(people.fetched)}. Bots are not listed.</p>
 </div>
 </section>
 
 <section class="sec" id="proof">
 <div class="wrap">
 <h2>In the wild</h2>
-<figure class="quote">
-<blockquote><p>${esc(q.text)}</p></blockquote>
-<figcaption><a href="${q.url}">${esc(q.who)} (@${q.handle}) on X, about ${q.about}</a></figcaption>
-</figure>
+<p>Public posts on X from people who use it, quoted word for word. A few are excerpts of a longer post.</p>
+<ul class="quotes" tabindex="0" aria-label="Posts about Infomarchy, swipe sideways for more">
+${quotesHtml}
+</ul>
 </div>
 </section>
 
@@ -275,8 +415,8 @@ ${footer}</body>
 }
 
 /* ------------------------------------------------------------- markdown */
-function indexMd(s: Stats) {
-  const q = C.QUOTE
+function indexMd(s: Stats, people: People) {
+  const cs = peopleCards(people)
   return `# Infomarchy
 
 ${C.TAGLINE}
@@ -317,15 +457,23 @@ ${C.FEATURES.map((f) => `### ${f.title}\n\n${f.body}`).join('\n\n')}
 
 ## On GitHub
 
-${s.stars} stars, ${s.forks} forks, ${s.contributors} contributors. MIT license.
+${s.stars} stars, ${s.forks} forks, ${cs.length} contributors. MIT license.
 
-Star and contributor counts are from GitHub, ${longDate(s.fetched)}.
+Star counts and the contributor count are from GitHub, ${longDate(s.fetched)}.
+
+## Contributors
+
+${cs.length} people have contributed to Infomarchy. Here is what each of them added, from their merged pull requests.
+
+${cs.map((c) => `### ${c.name} (@${c.handle})\n\n${c.role}. ${c.text}\n\nGitHub: ${c.url}${c.prs.length ? '\n\nPull requests: ' + c.prs.map((m) => `${m.url}`).join(' ') : ''}`).join('\n\n')}
+
+Contributor list and pull requests from GitHub, ${longDate(people.fetched)}. Bots are not listed.
 
 ## In the wild
 
-> ${q.text}
+Public posts on X from people who use it, quoted word for word. A few are excerpts of a longer post.
 
-${q.who} (@${q.handle}) on X, about ${q.about}: ${q.url}
+${C.QUOTES.map((q) => `> ${q.text}\n\n${q.who} (@${q.handle}) on X, about ${q.about}: ${q.url}`).join('\n\n')}
 
 ## Part of nixfred.com
 
@@ -384,6 +532,7 @@ function renderSkills() {
 /* ----------------------------------------------------------------- main */
 const statsOnly = process.argv.includes('--stats-only')
 const stats = await loadStats()
+const people = await loadPeople()
 if (statsOnly) process.exit(0)
 await checkReadme()
 
@@ -395,10 +544,11 @@ mkdirSync(join(DIST, 'assets'), { recursive: true })
 
 for (const f of ['site.css', 'site.js']) emitAsset(f, readFileSync(join(SRC, f)))
 for (const f of readdirSync(PUB_ASSETS)) emitAsset(f, readFileSync(join(PUB_ASSETS, f)))
+for (const x of people.people) emitAsset('av-' + x.avatar, readFileSync(join(AVATAR_DIR, x.avatar)))
 
-writeFileSync(join(DIST, 'index.html'), indexHtml(stats))
+writeFileSync(join(DIST, 'index.html'), indexHtml(stats, people))
 writeFileSync(join(DIST, '404.html'), notFoundHtml())
-writeFileSync(join(DIST, 'index.md'), indexMd(stats))
+writeFileSync(join(DIST, 'index.md'), indexMd(stats, people))
 writeFileSync(
   join(DIST, 'robots.txt'),
   `User-agent: *\nContent-Signal: ai-train=no, search=yes, ai-input=yes\nAllow: /\n\nSitemap: ${SITE.origin}/sitemap.xml\n`,
@@ -441,4 +591,4 @@ writeFileSync(
 `,
 )
 renderSkills()
-console.log('built dist/ ·', stats.stars, 'stars,', stats.forks, 'forks,', stats.contributors, 'contributors, fetched', stats.fetched)
+console.log('built dist/ ·', stats.stars, 'stars,', stats.forks, 'forks,', people.people.length, 'contributors, fetched', stats.fetched)

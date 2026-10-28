@@ -1,0 +1,320 @@
+{
+  "fetched": "2026-10-28",
+  "people": [
+    {
+      "login": "nixfred",
+      "name": "Fred Nix",
+      "url": "https://github.com/nixfred",
+      "avatar": "nixfred.jpg",
+      "merged": [
+        {
+          "number": 1,
+          "title": "Fix Grok history counts and redact secrets",
+          "url": "https://github.com/nixfred/infomarchy/pull/1"
+        },
+        {
+          "number": 2,
+          "title": "Keep activity heatmap aligned across DST",
+          "url": "https://github.com/nixfred/infomarchy/pull/2"
+        },
+        {
+          "number": 3,
+          "title": "fix: honor omarchy.background IPC so theme-set updates the wallpaper immediately",
+          "url": "https://github.com/nixfred/infomarchy/pull/3"
+        },
+        {
+          "number": 4,
+          "title": "fix: collector rate race, Codex app-server false sessions, DST heatmap",
+          "url": "https://github.com/nixfred/infomarchy/pull/4"
+        },
+        {
+          "number": 5,
+          "title": "fix: Esc dismisses overlay; bun stderr no longer paints as a collector error",
+          "url": "https://github.com/nixfred/infomarchy/pull/5"
+        },
+        {
+          "number": 6,
+          "title": "fix: Grok card keeps pulsing after the turn is done",
+          "url": "https://github.com/nixfred/infomarchy/pull/6"
+        },
+        {
+          "number": 7,
+          "title": "Add AI operations desk and privacy mode",
+          "url": "https://github.com/nixfred/infomarchy/pull/7"
+        },
+        {
+          "number": 8,
+          "title": "Make Needs You alerts navigate to agents",
+          "url": "https://github.com/nixfred/infomarchy/pull/8"
+        },
+        {
+          "number": 9,
+          "title": "Add SUPER+I wallpaper dashboard toggle",
+          "url": "https://github.com/nixfred/infomarchy/pull/9"
+        },
+        {
+          "number": 42,
+          "title": "fix: bound df row parsing, test each dedupe guard, correct disk changelog",
+          "url": "https://github.com/nixfred/infomarchy/pull/42"
+        }
+      ]
+    },
+    {
+      "login": "TechLuddite",
+      "name": "TechLuddite",
+      "url": "https://github.com/TechLuddite",
+      "avatar": "TechLuddite.jpg",
+      "merged": [
+        {
+          "number": 14,
+          "title": "fix: harden observational collection and credential redaction",
+          "url": "https://github.com/nixfred/infomarchy/pull/14"
+        },
+        {
+          "number": 15,
+          "title": "feat: add Pi sessions and fair recent-task selection",
+          "url": "https://github.com/nixfred/infomarchy/pull/15"
+        },
+        {
+          "number": 16,
+          "title": "feat: improve desktop usage collection, billing, and hard refresh",
+          "url": "https://github.com/nixfred/infomarchy/pull/16"
+        },
+        {
+          "number": 18,
+          "title": "feat: persist the LOCAL AI Ollama origin",
+          "url": "https://github.com/nixfred/infomarchy/pull/18"
+        },
+        {
+          "number": 19,
+          "title": "feat: add an optional containers card with start and stop controls",
+          "url": "https://github.com/nixfred/infomarchy/pull/19"
+        },
+        {
+          "number": 20,
+          "title": "feat: add an optional MPRIS media controls card",
+          "url": "https://github.com/nixfred/infomarchy/pull/20"
+        },
+        {
+          "number": 21,
+          "title": "fix: contain session-card text and align desktop spacing",
+          "url": "https://github.com/nixfred/infomarchy/pull/21"
+        },
+        {
+          "number": 22,
+          "title": "feat: support animated image wallpapers and pause closed overlays",
+          "url": "https://github.com/nixfred/infomarchy/pull/22"
+        },
+        {
+          "number": 25,
+          "title": "Add Web Mode with LAN, Tailscale and Manual HTTPS",
+          "url": "https://github.com/nixfred/infomarchy/pull/25"
+        }
+      ]
+    },
+    {
+      "login": "alinuxfan",
+      "name": "Adam",
+      "url": "https://github.com/alinuxfan",
+      "avatar": "alinuxfan.jpg",
+      "merged": [
+        {
+          "number": 24,
+          "title": "feat: recognize Antigravity and agy as an agent provider",
+          "url": "https://github.com/nixfred/infomarchy/pull/24"
+        },
+        {
+          "number": 27,
+          "title": "fix: remove accidentally committed node_modules symlink",
+          "url": "https://github.com/nixfred/infomarchy/pull/27"
+        }
+      ]
+    },
+    {
+      "login": "auggernaut",
+      "name": "Augustin Bralley",
+      "url": "https://github.com/auggernaut",
+      "avatar": "auggernaut.png",
+      "merged": [
+        {
+          "number": 29,
+          "title": "docs: make Super+I shortcut setup explicit",
+          "url": "https://github.com/nixfred/infomarchy/pull/29"
+        },
+        {
+          "number": 36,
+          "title": "Add optional development app controls",
+          "url": "https://github.com/nixfred/infomarchy/pull/36"
+        }
+      ]
+    },
+    {
+      "login": "jaylfc",
+      "name": "jaylfc",
+      "url": "https://github.com/jaylfc",
+      "avatar": "jaylfc.jpg",
+      "merged": [
+        {
+          "number": 31,
+          "title": "Desk view keeps clear of reserved background-layer bands (e.g. hymission stage sidebar)",
+          "url": "https://github.com/nixfred/infomarchy/pull/31"
+        },
+        {
+          "number": 32,
+          "title": "Track Kimi Code sessions as a provider",
+          "url": "https://github.com/nixfred/infomarchy/pull/32"
+        }
+      ]
+    },
+    {
+      "login": "jttraino",
+      "name": "",
+      "url": "https://github.com/jttraino",
+      "avatar": "jttraino.png",
+      "merged": [
+        {
+          "number": 33,
+          "title": "feat: group agents by agent name",
+          "url": "https://github.com/nixfred/infomarchy/pull/33"
+        },
+        {
+          "number": 34,
+          "title": "feat: recognise Cursor sessions, from the IDE as well as the terminal",
+          "url": "https://github.com/nixfred/infomarchy/pull/34"
+        }
+      ]
+    },
+    {
+      "login": "reverb256",
+      "name": "Reverb",
+      "url": "https://github.com/reverb256",
+      "avatar": "reverb256.jpg",
+      "merged": [
+        {
+          "number": 11,
+          "title": "fix: recognize Hermes launched via python -m hermes_cli.main",
+          "url": "https://github.com/nixfred/infomarchy/pull/11"
+        },
+        {
+          "number": 39,
+          "title": "perf: event-driven refresh on top of the poll, watches built from HOME",
+          "url": "https://github.com/nixfred/infomarchy/pull/39"
+        }
+      ]
+    },
+    {
+      "login": "Tech0001",
+      "name": "David R",
+      "url": "https://github.com/Tech0001",
+      "avatar": "Tech0001.jpg",
+      "merged": [
+        {
+          "number": 28,
+          "title": "Fix wallpaper stretching on ultrawide and portrait displays",
+          "url": "https://github.com/nixfred/infomarchy/pull/28"
+        },
+        {
+          "number": 30,
+          "title": "feat: add Gitea activity alongside GitHub",
+          "url": "https://github.com/nixfred/infomarchy/pull/30"
+        }
+      ]
+    },
+    {
+      "login": "wulfkaal",
+      "name": "Wulf Kaal, Ph.D. ウルフ・カール",
+      "url": "https://github.com/wulfkaal",
+      "avatar": "wulfkaal.jpg",
+      "merged": [
+        {
+          "number": 12,
+          "title": "fix: let an operator switch off automatic topic refinement",
+          "url": "https://github.com/nixfred/infomarchy/pull/12"
+        },
+        {
+          "number": 13,
+          "title": "feat: REMOTE, an optional roster file becomes a read-only card",
+          "url": "https://github.com/nixfred/infomarchy/pull/13"
+        }
+      ]
+    },
+    {
+      "login": "dannyowelch",
+      "name": "Danny Welch",
+      "url": "https://github.com/dannyowelch",
+      "avatar": "dannyowelch.jpg",
+      "merged": [
+        {
+          "number": 40,
+          "title": "fix: keep the desk clear of the bar on whichever edge it occupies",
+          "url": "https://github.com/nixfred/infomarchy/pull/40"
+        }
+      ]
+    },
+    {
+      "login": "eternal4430",
+      "name": "Greg",
+      "url": "https://github.com/eternal4430",
+      "avatar": "eternal4430.png",
+      "merged": [
+        {
+          "number": 35,
+          "title": "FLEET: other machines' AI agents, seen over SSH (closes the roadmap item)",
+          "url": "https://github.com/nixfred/infomarchy/pull/35"
+        }
+      ]
+    },
+    {
+      "login": "GreyforgeLabs",
+      "name": "Greyforge Labs",
+      "url": "https://github.com/GreyforgeLabs",
+      "avatar": "GreyforgeLabs.jpg",
+      "merged": [
+        {
+          "number": 41,
+          "title": "fix: retain disk mounts containing whitespace",
+          "url": "https://github.com/nixfred/infomarchy/pull/41"
+        }
+      ]
+    },
+    {
+      "login": "RidgetopAi",
+      "name": "RidgetopAi",
+      "url": "https://github.com/RidgetopAi",
+      "avatar": "RidgetopAi.jpg",
+      "merged": [
+        {
+          "number": 37,
+          "title": "FLEET sessions: which remote agent needs you, and one click to get there",
+          "url": "https://github.com/nixfred/infomarchy/pull/37"
+        }
+      ]
+    },
+    {
+      "login": "shieldsworks",
+      "name": "Casey Shields",
+      "url": "https://github.com/shieldsworks",
+      "avatar": "shieldsworks.jpg",
+      "merged": [
+        {
+          "number": 38,
+          "title": "Pin the desk to one workspace, keeping the wallpaper on all of them",
+          "url": "https://github.com/nixfred/infomarchy/pull/38"
+        }
+      ]
+    },
+    {
+      "login": "sooners0",
+      "name": "",
+      "url": "https://github.com/sooners0",
+      "avatar": "sooners0.png",
+      "merged": [
+        {
+          "number": 10,
+          "title": "feat: show Hermes sessions in Recent Tasks",
+          "url": "https://github.com/nixfred/infomarchy/pull/10"
+        }
+      ]
+    }
+  ]
+}

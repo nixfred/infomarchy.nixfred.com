@@ -302,11 +302,48 @@ h1 {
 }
 .stats b { color: var(--text); font-weight: 500; }
 
+/* contributors */
+.people { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin: 1.5rem 0 0; padding: 0; list-style: none; }
+.person {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 1.25rem 1.25rem 1.375rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+.p-head { display: flex; align-items: center; gap: 0.75rem; min-height: var(--tap); text-decoration: none; color: var(--text); }
+.av { display: block; flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; background: var(--code-bg); border: 1px solid var(--line); }
+.p-id { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.p-name { font-family: var(--font-display); font-weight: 500; font-size: 1.125rem; overflow-wrap: anywhere; }
+.p-handle { font-size: var(--note-size); color: var(--muted); overflow-wrap: anywhere; }
+.p-head:hover .p-handle { color: var(--accent); }
+.p-role { margin: 0; font-size: var(--eyebrow-size); color: var(--accent); }
+.person p.p-what { margin: 0; font-size: 0.9375rem; color: var(--text-soft); }
+.p-prs { margin: auto 0 0; padding-top: 0.25rem; font-size: var(--note-size); color: var(--muted); }
+.p-prs a { margin-left: 0.5rem; color: var(--text-soft); text-decoration-color: var(--accent); text-underline-offset: 4px; font-variant-numeric: tabular-nums; }
+.p-prs a:hover { color: var(--text); }
+
 /* proof */
+.quotes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin: 1.5rem 0 0; padding: 0; list-style: none; }
+.quotes > li { display: flex; min-width: 0; }
+.quotes .quote {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: none;
+  padding: 1.25rem 1.25rem 1.125rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
 .quote { margin: 0; max-width: 62ch; }
 .quote blockquote { margin: 0; font-size: var(--body-size); color: var(--text); }
 .quote blockquote p { margin: 0; }
 .quote figcaption { margin-top: 0.75rem; font-size: var(--note-size); color: var(--muted); }
+.quotes .quote figcaption { margin-top: auto; padding-top: 0.75rem; }
 .quote figcaption a { color: var(--muted); text-decoration-color: var(--accent); text-underline-offset: 4px; }
 .quote figcaption a:hover { color: var(--text); }
 
@@ -338,10 +375,12 @@ h1 {
 @media (max-width: 820px) {
   .hero { padding: 3.5rem 0 3rem; }
   .grid { grid-template-columns: 1fr; }
+  .people { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
   .bar-in { padding: 0.375rem 0; }
   .nav { gap: 0; }
+  .nav .nav-more { display: none; }
   .nav a { padding: 0 0.5rem; font-size: 0.875rem; }
   .hero { padding: 1rem 0 1.75rem; }
   .eyebrow, .sec > .wrap > h2 { margin-bottom: 0.875rem; }
@@ -351,12 +390,37 @@ h1 {
   .card .short { display: block; }
   .card p { font-size: 0.9375rem; }
   .stats { font-size: 0.8125rem; }
+  .people { grid-template-columns: 1fr; margin-top: 1rem; }
+  .person { padding: 0.75rem 1rem 0.875rem; gap: 0.25rem; }
+  .p-head { gap: 0.625rem; }
+  .av { width: 36px; height: 36px; }
+  .p-name { font-size: 1rem; }
+  .p-prs a { padding-block: 0.875rem; margin-block: -0.875rem; padding-inline: 0.25rem; margin-left: 0.25rem; }
+  .quotes {
+    display: flex;
+    gap: var(--gap);
+    margin: 1rem calc(50% - 50vw) 0;
+    padding: 0 1.25rem 0.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .quotes::-webkit-scrollbar { display: none; }
+  .quotes > li { flex: 0 0 84%; scroll-snap-align: start; }
+  .quotes .quote { padding: 1rem 1rem 0.875rem; }
+  .quotes .quote blockquote { font-size: 0.9375rem; }
   .quote figcaption a, .back a, .foot p a, .foot-link { padding-block: 0.875rem; margin-block: -0.875rem; }
   .foot { padding: 1.5rem 0 2rem; }
   .code pre { padding: 0.875rem 1rem; font-size: 0.8125rem; }
   .js .code pre { padding-right: 1rem; padding-bottom: 3.5rem; }
   .copy { top: auto; bottom: 0.5rem; }
   .nf { padding: 1.5rem 0 3rem; }
+}
+@media (min-width: 641px) and (max-width: 900px) {
+  .quotes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 360px) {
   .nav a { padding: 0 0.375rem; }
